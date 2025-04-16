@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { Button, StyleSheet, TextInput, Alert } from 'react-native';
-import { useRouter, useSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
 // import { apiFetch } from '@/constants/api'; // API désactivée temporairement
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
 export default function LoginScreen() {
-  const { email: prefilledEmail } = useSearchParams();
-  const [email, setEmail] = useState(prefilledEmail || '');
-  const [password, setPassword] = useState('');
   const router = useRouter();
+  const prefilledEmail = router.query?.email || '';
+  const [email, setEmail] = useState(prefilledEmail);
+  const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
     try {
