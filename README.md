@@ -1,6 +1,6 @@
 # Share Mobile
 
-Bienvenue sur le projet **Share Mobile**, une application mobile développée avec React Native. Cette application est la version mobile de notre site web Symfony, permettant le partage de fichiers entre utilisateurs et intégrant un système de blog pour faciliter les discussions entre les membres.
+Bienvenue sur le projet **Share Mobile**, une application mobile développée avec React Native. Cette application est la version mobile de notre site web Symfony, permettant le partage de fichiers entre utilisateurs.
 
 ## Auteurs
 
@@ -8,12 +8,11 @@ Bienvenue sur le projet **Share Mobile**, une application mobile développée av
 
 ## Description
 
-Le projet Share Mobile a été réalisé dans le cadre de l'épreuve E5 SLAM du BTS SIO. Il permet aux utilisateurs de partager des fichiers, de discuter via un blog intégré, et de gérer leurs fichiers de manière sécurisée et organisée, tout en offrant une expérience mobile fluide.
+Le projet Share Mobile a été réalisé dans le cadre de l'épreuve E5 SLAM du BTS SIO. Il permet aux utilisateurs de partager des fichiers et de les gérer de manière sécurisée et organisée, tout en offrant une expérience mobile fluide.
 
 ### Fonctionnalités principales
 
 - **Partage de fichiers** : Les utilisateurs peuvent télécharger et partager des fichiers.
-- **Système de blog** : Permet aux utilisateurs de discuter et d'échanger des idées.
 - **Gestion des utilisateurs** : Inscription, connexion, et gestion des profils.
 - **Organisation des fichiers** : Classement des fichiers par catégories et suivi des téléchargements.
 - **Synchronisation avec le site Symfony** : Les données sont partagées entre l'application mobile et le site web.
