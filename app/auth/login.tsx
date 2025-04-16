@@ -19,8 +19,9 @@ export default function LoginScreen() {
       });
       Alert.alert('Succès', 'Connexion réussie');
       router.push('/');
-    } catch (error) {
-      Alert.alert('Erreur', 'Échec de la connexion');
+    } catch (error: any) {
+      const errorMessage = error.message || 'Échec de la connexion';
+      Alert.alert('Erreur', errorMessage);
     }
   };
 
