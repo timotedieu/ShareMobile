@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, StyleSheet, TextInput, Alert } from 'react-native';
 import { useRouter, useSearchParams } from 'expo-router';
-import { apiFetch } from '@/constants/api';
+// import { apiFetch } from '@/constants/api'; // API désactivée temporairement
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
@@ -13,14 +13,14 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
-      await apiFetch('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      });
-      Alert.alert('Succès', 'Connexion réussie');
+      // await apiFetch('/auth/login', {
+      //   method: 'POST',
+      //   body: JSON.stringify({ email, password }),
+      // });
+      Alert.alert('Succès', 'Connexion réussie (simulation)');
       router.push('/');
     } catch (error: any) {
-      const errorMessage = error.message || 'Échec de la connexion';
+      const errorMessage = error.message || 'Échec de la connexion (simulation)';
       Alert.alert('Erreur', errorMessage);
     }
   };
