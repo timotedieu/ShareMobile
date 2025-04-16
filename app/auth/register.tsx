@@ -33,7 +33,7 @@ export default function RegisterScreen() {
     <ThemedView style={styles.container}>
       <ThemedText type="title">Inscription</ThemedText>
       <TextInput
-        style={[styles.input, styles.inputText, styles.inputRounded]}
+        style={[styles.input, styles.inputText, styles.inputRounded, styles.inputShadow]}
         placeholder="Email"
         placeholderTextColor="#888"
         value={email}
@@ -42,7 +42,7 @@ export default function RegisterScreen() {
         autoCapitalize="none"
       />
       <TextInput
-        style={[styles.input, styles.inputText, styles.inputRounded]}
+        style={[styles.input, styles.inputText, styles.inputRounded, styles.inputShadow]}
         placeholder="Mot de passe"
         placeholderTextColor="#888"
         value={password}
@@ -50,7 +50,7 @@ export default function RegisterScreen() {
         secureTextEntry
       />
       <TextInput
-        style={[styles.input, styles.inputText, styles.inputRounded]}
+        style={[styles.input, styles.inputText, styles.inputRounded, styles.inputShadow]}
         placeholder="Confirmer le mot de passe"
         placeholderTextColor="#888"
         value={confirmPassword}
@@ -90,6 +90,13 @@ const styles = StyleSheet.create({
   inputRounded: {
     borderRadius: 25,
   },
+  inputShadow: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
   button: {
     width: '80%',
     paddingVertical: 14,
@@ -103,10 +110,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   primaryButton: {
-    backgroundColor: '#1E90FF',
+    backgroundColor: '#007BFF', // Modern blue
   },
   secondaryButton: {
-    backgroundColor: '#32CD32',
+    backgroundColor: '#6C757D', // Neutral gray
   },
   buttonText: {
     color: '#fff',
