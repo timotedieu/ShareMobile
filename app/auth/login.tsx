@@ -72,9 +72,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: '#fff',
   },
-  inputText: {
-    color: '#000',
-  },
   button: {
     width: '80%',
     paddingVertical: 14,
@@ -97,5 +94,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  inputText: {
+    color: '#000',
   },
 });
