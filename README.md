@@ -1,50 +1,52 @@
-# Welcome to your Expo app 👋
+# Share Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Bienvenue sur le projet **Share Mobile**, une application mobile développée avec React Native. Cette application est la version mobile de notre site web Symfony, permettant le partage de fichiers entre utilisateurs et intégrant un système de blog pour faciliter les discussions entre les membres.
 
-## Get started
+## Auteurs
 
-1. Install dependencies
+- **Lucas MONIEZ**
 
-   ```bash
-   npm install
-   ```
+## Description
 
-2. Start the app
+Le projet Share Mobile a été réalisé dans le cadre de l'épreuve E5 SLAM du BTS SIO. Il permet aux utilisateurs de partager des fichiers, de discuter via un blog intégré, et de gérer leurs fichiers de manière sécurisée et organisée, tout en offrant une expérience mobile fluide.
 
-   ```bash
-    npx expo start
-   ```
+### Fonctionnalités principales
 
-In the output, you'll find options to open the app in a
+- **Partage de fichiers** : Les utilisateurs peuvent télécharger et partager des fichiers.
+- **Système de blog** : Permet aux utilisateurs de discuter et d'échanger des idées.
+- **Gestion des utilisateurs** : Inscription, connexion, et gestion des profils.
+- **Organisation des fichiers** : Classement des fichiers par catégories et suivi des téléchargements.
+- **Synchronisation avec le site Symfony** : Les données sont partagées entre l'application mobile et le site web.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Technologies utilisées
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **React Native** : Framework pour le développement mobile multiplateforme.
+- **Expo** : Outils et services pour simplifier le développement React Native.
+- **Symfony** : Backend du site web avec lequel l'application est synchronisée.
+- **MySQL** : Base de données pour stocker les informations des utilisateurs et des fichiers.
+- **GitHub** : Collaboration et gestion du code source.
+- **Figma** : Conception des interfaces utilisateur.
 
-## Get a fresh project
+## Installation
 
-When you're ready, run:
+Voici les étapes pour installer et utiliser ce projet :
+1. Clonez ce dépôt ou téléchargez les fichiers.  
+2. Installez les dépendances avec `npm install`.  
+3. Configurez les paramètres de connexion à l'API Symfony dans le fichier `.env`.  
+4. Lancez l'application avec `npx expo start`.  
+5. Scannez le QR code avec l'application Expo Go ou utilisez un émulateur Android/iOS.
 
-```bash
-npm run reset-project
-```
+## Structure des fichiers
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- `app/` : Contient les écrans et la navigation de l'application.
+- `components/` : Composants réutilisables pour l'interface utilisateur.
+- `hooks/` : Hooks personnalisés pour la gestion des thèmes et autres fonctionnalités.
+- `constants/` : Fichiers de configuration et constantes globales.
+- `assets/` : Images, polices et autres ressources statiques.
+- `scripts/` : Scripts utilitaires pour la gestion du projet.
 
-## Learn more
+## Ressources et documentation
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- **Documentation React Native** : [https://reactnative.dev/docs/getting-started](https://reactnative.dev/docs/getting-started)
+- **Documentation Expo** : [https://docs.expo.dev/](https://docs.expo.dev/)
+- **Documentation Symfony** : [https://symfony.com/doc/current/](https://symfony.com/doc/current/)
