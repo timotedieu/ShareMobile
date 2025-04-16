@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { apiFetch } from '@/constants/api';
 
 export default function HomeScreen() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // Par défaut, connecté
   const router = useRouter();
 
   useEffect(() => {
@@ -19,7 +19,8 @@ export default function HomeScreen() {
       }
     };
 
-    checkAuth();
+    // Désactivé pour simuler un état connecté
+    // checkAuth();
   }, []);
 
   const handlePress = (path: string) => {
@@ -46,8 +47,17 @@ export default function HomeScreen() {
       <View style={styles.buttonContainer}>
         {isAuthenticated ? (
           <>
-            <TouchableOpacity style={[styles.button, styles.primaryButton]} onPress={() => handlePress('/files/share')}>
+            <TouchableOpacity
+              style={[styles.button, styles.primaryButton]}
+              onPress={() => handlePress('/files/share')}
+            >
               <Text style={styles.buttonText}>Partager un fichier</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.secondaryButton]}
+              onPress={() => handlePress('/files/view')}
+            >
+              <Text style={styles.buttonText}>Voir les fichiers partagés</Text>
             </TouchableOpacity>
           </>
         ) : (
