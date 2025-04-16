@@ -18,12 +18,12 @@ export default function RegisterScreen() {
     }
 
     try {
-      const response = await apiFetch('/auth/register', {
+      await apiFetch('/auth/register', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       });
       Alert.alert('Succès', 'Inscription réussie');
-      router.push('/auth/login'); // Redirige vers la page de connexion
+      router.push({ pathname: '/auth/login', params: { email } });
     } catch (error) {
       Alert.alert('Erreur', 'Échec de l\'inscription');
     }

@@ -1,23 +1,24 @@
 import { useState } from 'react';
 import { Button, StyleSheet, TextInput, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useSearchParams } from 'expo-router';
 import { apiFetch } from '@/constants/api';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
+  const { email: prefilledEmail } = useSearchParams();
+  const [email, setEmail] = useState(prefilledEmail || '');
   const [password, setPassword] = useState('');
   const router = useRouter();
 
   const handleLogin = async () => {
     try {
-      const response = await apiFetch('/auth/login', {
+      await apiFetch('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       });
       Alert.alert('Succès', 'Connexion réussie');
-      router.push('/'); // Redirige vers la page d'accueil
+      router.push('/');
     } catch (error) {
       Alert.alert('Erreur', 'Échec de la connexion');
     }
