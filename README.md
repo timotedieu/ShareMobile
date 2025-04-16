@@ -39,6 +39,13 @@ Voici les étapes pour installer et utiliser ce projet :
 ## Structure des fichiers
 
 - `app/` : Contient les écrans et la navigation de l'application.
+  - `(tabs)/` : Pages principales accessibles via la navigation par onglets.
+    - `index.tsx` : Page d'accueil.
+    - `explore.tsx` : Page d'exploration.
+  - `auth/` : Pages liées à l'authentification.
+    - `login.tsx` : Page de connexion.
+    - `register.tsx` : Page d'inscription.
+  - `+not-found.tsx` : Page affichée pour les routes non trouvées.
 - `components/` : Composants réutilisables pour l'interface utilisateur.
 - `hooks/` : Hooks personnalisés pour la gestion des thèmes et autres fonctionnalités.
 - `constants/` : Fichiers de configuration et constantes globales.
