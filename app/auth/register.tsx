@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, StyleSheet, TextInput, Alert } from 'react-native';
+import { StyleSheet, TextInput, Alert, TouchableOpacity, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { apiFetch } from '@/constants/api';
 import { ThemedText } from '@/components/ThemedText';
@@ -33,29 +33,36 @@ export default function RegisterScreen() {
     <ThemedView style={styles.container}>
       <ThemedText type="title">Inscription</ThemedText>
       <TextInput
-        style={styles.input}
+        style={[styles.input, styles.inputText, styles.inputRounded]}
         placeholder="Email"
+        placeholderTextColor="#888"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, styles.inputText, styles.inputRounded]}
         placeholder="Mot de passe"
+        placeholderTextColor="#888"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, styles.inputText, styles.inputRounded]}
         placeholder="Confirmer le mot de passe"
+        placeholderTextColor="#888"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry
       />
-      <Button title="S'inscrire" onPress={handleRegister} />
-      <Button title="Retour à la connexion" onPress={() => router.push('/auth/login')} />
+      <TouchableOpacity style={[styles.button, styles.primaryButton]} onPress={handleRegister}>
+        <Text style={styles.buttonText}>S'inscrire</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={[styles.button, styles.secondaryButton]} onPress={() => router.push('/auth/login')}>
+        <Text style={styles.buttonText}>Retour à la connexion</Text>
+      </TouchableOpacity>
     </ThemedView>
   );
 }
@@ -65,12 +72,45 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
   },
   input: {
+    width: '80%',
     borderWidth: 1,
     borderColor: '#ccc',
-    padding: 8,
-    marginVertical: 8,
-    borderRadius: 4,
+    padding: 12,
+    marginVertical: 10,
+    backgroundColor: '#fff',
+    color: '#000',
+  },
+  inputText: {
+    color: '#000',
+  },
+  inputRounded: {
+    borderRadius: 25,
+  },
+  button: {
+    width: '80%',
+    paddingVertical: 14,
+    borderRadius: 25,
+    marginVertical: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  primaryButton: {
+    backgroundColor: '#1E90FF',
+  },
+  secondaryButton: {
+    backgroundColor: '#32CD32',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
