@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { StyleSheet, TextInput, Alert, TouchableOpacity, Text } from 'react-native';
 import { useRouter } from 'expo-router';
-import { apiFetch } from '@/constants/api';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
@@ -9,6 +8,8 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [prenom, setPrenom] = useState('');
+  const [nom, setNom] = useState('');
   const router = useRouter();
 
   const handleRegister = async () => {
@@ -18,20 +19,47 @@ export default function RegisterScreen() {
     }
 
     try {
-      await apiFetch('/auth/register', {
+      const response = await fetch('http://127.0.0.1:8000/api/users/register', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          password,
+          roles: ['ROLE_USER'],
+          date_inscription: new Date().toISOString(),
+          prenom,
+          nom,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'inscription');
+      }
+
       Alert.alert('Succès', 'Inscription réussie');
       router.push({ pathname: '/auth/login', params: { email } });
-    } catch (error) {
-      Alert.alert('Erreur', 'Échec de l\'inscription');
+    } catch (error: any) {
+      Alert.alert('Erreur', error.message || 'Échec de l\'inscription');
     }
   };
 
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title">Inscription</ThemedText>
+      <TextInput
+        style={[styles.input, styles.inputText, styles.inputRounded, styles.inputShadow]}
+        placeholder="Prénom"
+        placeholderTextColor="#888"
+        value={prenom}
+        onChangeText={setPrenom}
+      />
+      <TextInput
+        style={[styles.input, styles.inputText, styles.inputRounded, styles.inputShadow]}
+        placeholder="Nom"
+        placeholderTextColor="#888"
+        value={nom}
+        onChangeText={setNom}
+      />
       <TextInput
         style={[styles.input, styles.inputText, styles.inputRounded, styles.inputShadow]}
         placeholder="Email"
@@ -110,10 +138,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   primaryButton: {
-    backgroundColor: '#007BFF', // Modern blue
+    backgroundColor: '#007BFF',
   },
   secondaryButton: {
-    backgroundColor: '#6C757D', // Neutral gray
+    backgroundColor: '#6C757D',
   },
   buttonText: {
     color: '#fff',
