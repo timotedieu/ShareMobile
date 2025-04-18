@@ -1,27 +1,31 @@
 import { useState } from 'react';
-import { Button, StyleSheet, TextInput, Alert, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, TextInput, Alert, TouchableOpacity, Text } from 'react-native';
 import { useRouter } from 'expo-router';
-// import { apiFetch } from '@/constants/api'; // API désactivée temporairement
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const prefilledEmail = router.query?.email || '';
-  const [email, setEmail] = useState(prefilledEmail);
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
     try {
-      // await apiFetch('/auth/login', {
-      //   method: 'POST',
-      //   body: JSON.stringify({ email, password }),
-      // });
-      Alert.alert('Succès', 'Connexion réussie (simulation)');
+      const response = await fetch('http://127.0.0.1:8000/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Email ou mot de passe incorrect');
+      }
+
+      const data = await response.json();
+      Alert.alert('Succès', 'Connexion réussie');
       router.push('/');
     } catch (error: any) {
-      const errorMessage = error.message || 'Échec de la connexion (simulation)';
-      Alert.alert('Erreur', errorMessage);
+      Alert.alert('Erreur', error.message || 'Échec de la connexion');
     }
   };
 
