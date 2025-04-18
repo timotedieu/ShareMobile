@@ -1,27 +1,35 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Alert, TouchableOpacity, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { apiFetch } from '@/constants/api';
 
 export default function HomeScreen() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // Par défaut, connecté
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
+  const { authenticated } = useLocalSearchParams();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        await apiFetch('/auth/check');
-        setIsAuthenticated(true);
-      } catch {
-        setIsAuthenticated(false);
-      }
-    };
+    if (authenticated === 'true') {
+      setIsAuthenticated(true);
+    } else {
+      const checkAuth = async () => {
+        try {
+          const response = await apiFetch('/auth/check');
+          if (response.ok) {
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
+          }
+        } catch {
+          setIsAuthenticated(false);
+        }
+      };
 
-    // Désactivé pour simuler un état connecté
-    // checkAuth();
-  }, []);
+      checkAuth();
+    }
+  }, [authenticated]); // Dépendance sur le paramètre `authenticated`
 
   const handlePress = (path: string) => {
     if (isAuthenticated) {
