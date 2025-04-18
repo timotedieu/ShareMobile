@@ -20,7 +20,7 @@ export default function ViewFilesScreen() {
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        const data = await apiFetch('/files');
+        const data = await apiFetch('/fichiers');
         setFiles(data);
       } catch (error) {
         Alert.alert('Erreur', 'Impossible de récupérer les fichiers partagés.');
