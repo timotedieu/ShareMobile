@@ -23,7 +23,7 @@ export default function LoginScreen() {
 
       const data = await response.json();
       Alert.alert('Succès', 'Connexion réussie');
-      router.push('/');
+      router.push('/?authenticated=true');
     } catch (error: any) {
       Alert.alert('Erreur', error.message || 'Échec de la connexion');
     }
