@@ -19,7 +19,24 @@ export default function RegisterScreen() {
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/users/register', {
+      const response = await fetch('http://127.0.0.1:8000/api/users/', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des données');
+      }
+
+      const users = await response.json();
+      const emailExists = users.some((u: any) => u.email === email);
+
+      if (emailExists) {
+        Alert.alert('Erreur', 'Cet email est déjà utilisé');
+        return;
+      }
+
+      const registerResponse = await fetch('http://127.0.0.1:8000/api/users/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -32,7 +49,7 @@ export default function RegisterScreen() {
         }),
       });
 
-      if (!response.ok) {
+      if (!registerResponse.ok) {
         throw new Error('Erreur lors de l\'inscription');
       }
 
