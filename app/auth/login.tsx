@@ -11,19 +11,24 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/users/login', {
-        method: 'POST',
+      const response = await fetch('http://127.0.0.1:8000/api/users/', {
+        method: 'GET',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
-        throw new Error('Email ou mot de passe incorrect');
+        throw new Error('Erreur lors de la récupération des données');
       }
 
-      const data = await response.json();
-      Alert.alert('Succès', 'Connexion réussie');
-      router.push('/?authenticated=true');
+      const users = await response.json();
+      const user = users.find((u: any) => u.email === email && u.password === password);
+
+      if (user) {
+        Alert.alert('Succès', 'Connexion réussie');
+        router.push('/?authenticated=true');
+      } else {
+        throw new Error('Email ou mot de passe incorrect');
+      }
     } catch (error: any) {
       Alert.alert('Erreur', error.message || 'Échec de la connexion');
     }
