@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, FlatList, View, Text, Platform } from 'react-native';
+import { StyleSheet, FlatList, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { apiFetch } from '@/constants/api';
@@ -14,7 +14,7 @@ type File = {
   taille: number;
 };
 
-export default function HomeScreen() {
+export default function FilesTabScreen() {
   const [files, setFiles] = useState<File[]>([]);
 
   useEffect(() => {
@@ -22,8 +22,7 @@ export default function HomeScreen() {
       try {
         const data = await apiFetch('/fichiers');
         setFiles(data);
-      } catch {
-      }
+      } catch {}
     };
     fetchFiles();
   }, []);
@@ -45,11 +44,7 @@ export default function HomeScreen() {
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title" style={styles.title}>
-        <Text style={{ color: '#1E90FF' }}>Share</Text>
-        <Text style={{ color: '#32CD32' }}>Mobile</Text>
-      </ThemedText>
-      <ThemedText type="subtitle" style={styles.subtitle}>
-        Partagez et consultez vos fichiers simplement
+        Fichiers partagés
       </ThemedText>
       {files.length === 0 ? (
         <ThemedText style={styles.emptyText}>
@@ -71,24 +66,16 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Platform.OS === 'android' ? 36 : 56,
-    paddingHorizontal: 0,
+    paddingTop: 56,
     backgroundColor: '#101014',
     alignItems: 'center',
   },
   title: {
-    fontSize: 34,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 8,
     textAlign: 'center',
-    letterSpacing: 1,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: '#aaa',
-    marginBottom: 18,
-    textAlign: 'center',
-    fontWeight: '500',
+    color: '#1E90FF',
   },
   list: {
     paddingHorizontal: 16,

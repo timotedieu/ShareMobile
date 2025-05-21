@@ -49,7 +49,7 @@ export default function ShareFileScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title">Partager un fichier</ThemedText>
+      <ThemedText type="title" style={styles.title}>Partager un fichier</ThemedText>
       <TouchableOpacity style={styles.fileButton} onPress={handlePickFile}>
         <Text style={styles.fileButtonText}>
           {file ? `Fichier sélectionné : ${file.name}` : 'Sélectionner un fichier'}
@@ -72,14 +72,21 @@ export default function ShareFileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    justifyContent: 'center',
+    paddingTop: 56,
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#000',
+    backgroundColor: '#101014',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 24,
+    color: '#1E90FF',
+    textAlign: 'center',
   },
   fileButton: {
     width: '80%',
-    padding: 12,
+    padding: 14,
     marginVertical: 10,
     borderRadius: 25,
     backgroundColor: '#1E90FF',
@@ -93,22 +100,23 @@ const styles = StyleSheet.create({
     width: '80%',
     borderWidth: 1,
     borderColor: '#ccc',
-    padding: 12,
+    padding: 14,
     marginVertical: 10,
     borderRadius: 25,
     backgroundColor: '#fff',
     color: '#000',
+    fontSize: 16,
   },
   button: {
     width: '80%',
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderRadius: 25,
-    marginVertical: 10,
+    marginVertical: 18,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: '#1E90FF',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
     elevation: 5,
   },
   primaryButton: {
@@ -116,7 +124,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: 'bold',
   },
 });
