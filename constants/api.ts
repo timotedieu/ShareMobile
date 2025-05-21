@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'https://votre-api-symfony.com/api';
+export const API_BASE_URL = 'http://localhost:8000/api'; // Remplacez par l'URL de ton API
 
 export async function apiFetch(endpoint: string, options?: RequestInit) {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
