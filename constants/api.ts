@@ -5,11 +5,10 @@ export async function apiFetch(endpoint: string, options?: RequestInit) {
   const isFormData = options?.body instanceof FormData;
   const isGet = !options?.method || options.method.toUpperCase() === 'GET';
 
+  // Ne pas forcer Content-Type pour GET ou FormData
   const headers: Record<string, string> = {
     ...(options?.headers as Record<string, string>),
   };
-
-  // N'ajoute Content-Type que si ce n'est pas un GET ni un FormData
   if (!isGet && !isFormData && !headers['Content-Type']) {
     headers['Content-Type'] = 'application/json';
   }
@@ -19,9 +18,14 @@ export async function apiFetch(endpoint: string, options?: RequestInit) {
     headers,
   });
 
+  // Si la réponse n'est pas du JSON, retourne une erreur claire
+  const contentType = response.headers.get('content-type');
   if (!response.ok) {
     throw new Error(`Erreur API : ${response.status}`);
   }
-
+  if (!contentType || !contentType.includes('application/json')) {
+    const text = await response.text();
+    throw new Error('Réponse non JSON : ' + text);
+  }
   return response.json();
 }

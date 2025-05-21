@@ -16,14 +16,17 @@ type File = {
 
 export default function FilesTabScreen() {
   const [files, setFiles] = useState<File[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchFiles = async () => {
       try {
+        setError(null);
         const data = await apiFetch('/fichiers');
         setFiles(data['hydra:member'] || []);
-      } catch {
+      } catch (e: any) {
         setFiles([]);
+        setError(e?.message || 'Erreur inconnue');
       }
     };
     fetchFiles();
@@ -48,7 +51,11 @@ export default function FilesTabScreen() {
       <ThemedText type="title" style={styles.title}>
         Fichiers partagés
       </ThemedText>
-      {files.length === 0 ? (
+      {error ? (
+        <ThemedText style={[styles.emptyText, { color: 'red' }]}>
+          Erreur : {error}
+        </ThemedText>
+      ) : files.length === 0 ? (
         <ThemedText style={styles.emptyText}>
           Aucun fichier trouvé.
         </ThemedText>
