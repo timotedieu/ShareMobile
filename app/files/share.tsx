@@ -4,28 +4,15 @@ import * as DocumentPicker from 'expo-document-picker';
 import { apiFetch } from '@/constants/api';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useRouter } from 'expo-router';
 
 export default function ShareFileScreen() {
   const [file, setFile] = useState<DocumentPicker.DocumentResult | null>(null);
   const [description, setDescription] = useState('');
-  const router = useRouter();
 
   const handlePickFile = async () => {
     const result = await DocumentPicker.getDocumentAsync();
     if (result.type === 'success') {
       setFile(result);
-    }
-  };
-
-  const getUserId = async () => {
-    try {
-      const response = await apiFetch('/auth/user');
-      const data = await response.json();
-      return data.id;
-    } catch {
-      Alert.alert('Erreur', 'Impossible de récupérer les informations utilisateur.');
-      throw new Error('Utilisateur non connecté');
     }
   };
 
@@ -36,9 +23,7 @@ export default function ShareFileScreen() {
     }
 
     try {
-      const userId = await getUserId();
       const formData = new FormData();
-      formData.append('user_id', `${userId}`);
       formData.append('nom_original', file.name);
       formData.append('nom_serveur', `server_${file.name}`);
       formData.append('date_envoi', new Date().toISOString());
