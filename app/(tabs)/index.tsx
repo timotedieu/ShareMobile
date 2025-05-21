@@ -22,6 +22,7 @@ type User = {
 };
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+const SERVER_URL = 'http://192.168.1.100:8000';
 
 export default function HomeScreen() {
   const [files, setFiles] = useState<File[]>([]);
@@ -62,17 +63,24 @@ export default function HomeScreen() {
   const renderItem = ({ item }: { item: File }) => {
     const isImage = IMAGE_EXTENSIONS.includes(item.extension?.toLowerCase());
     const imageUrl = isImage
-      ? `http://127.0.0.1:8000/uploads/${item.nomServeur}`
+      ? `${SERVER_URL}/uploads/${item.nomServeur}`
       : null;
+    const [imageError, setImageError] = useState(false);
 
     return (
       <View style={styles.fileItem}>
-        {isImage && (
+        {isImage && !imageError && (
           <Image
             source={{ uri: imageUrl! }}
             style={styles.fileImage}
             resizeMode="cover"
+            onError={() => setImageError(true)}
           />
+        )}
+        {isImage && imageError && (
+          <View style={[styles.fileImage, styles.imageError]}>
+            <Text style={{ color: '#fff', textAlign: 'center', marginTop: 70 }}>Image non dispo</Text>
+          </View>
         )}
         <ThemedText type="defaultSemiBold" style={styles.fileName}>{item.nomOriginal}</ThemedText>
         <View style={styles.fileMetaRow}>
@@ -169,6 +177,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 10,
     backgroundColor: '#222',
+    overflow: 'hidden',
+  },
+  imageError: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#444',
   },
   fileName: {
     fontSize: 18,
