@@ -23,7 +23,6 @@ export default function HomeScreen() {
         const data = await apiFetch('/fichiers');
         setFiles(data);
       } catch {
-        // Optionnel : gérer l'erreur d'affichage
       }
     };
     fetchFiles();
