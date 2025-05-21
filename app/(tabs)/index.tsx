@@ -5,13 +5,13 @@ import { ThemedView } from '@/components/ThemedView';
 import { apiFetch } from '@/constants/api';
 
 type File = {
-  id: string;
-  user_id: string;
-  nom_original: string;
-  nom_serveur: string;
-  date_envoi: string;
+  id: number;
+  nomOriginal: string;
+  nomServeur: string;
+  dateEnvoi: string;
   extension: string;
   taille: number;
+  user?: string;
 };
 
 export default function HomeScreen() {
@@ -21,8 +21,9 @@ export default function HomeScreen() {
     const fetchFiles = async () => {
       try {
         const data = await apiFetch('/fichiers');
-        setFiles(data);
+        setFiles(data['hydra:member'] || []);
       } catch {
+        setFiles([]);
       }
     };
     fetchFiles();
@@ -30,13 +31,13 @@ export default function HomeScreen() {
 
   const renderItem = ({ item }: { item: File }) => (
     <View style={styles.fileItem}>
-      <ThemedText type="defaultSemiBold" style={styles.fileName}>{item.nom_original}</ThemedText>
+      <ThemedText type="defaultSemiBold" style={styles.fileName}>{item.nomOriginal}</ThemedText>
       <View style={styles.fileMetaRow}>
-        <ThemedText style={styles.fileMeta}>👤 {item.user_id}</ThemedText>
-        <ThemedText style={styles.fileMeta}>📅 {new Date(item.date_envoi).toLocaleDateString()}</ThemedText>
+        <ThemedText style={styles.fileMeta}>👤 {item.user ? item.user.split('/').pop() : '-'}</ThemedText>
+        <ThemedText style={styles.fileMeta}>📅 {new Date(item.dateEnvoi).toLocaleDateString()}</ThemedText>
       </View>
       <View style={styles.fileMetaRow}>
-        <ThemedText style={styles.fileMeta}>📄 {item.extension.toUpperCase()}</ThemedText>
+        <ThemedText style={styles.fileMeta}>📄 {item.extension?.toUpperCase()}</ThemedText>
         <ThemedText style={styles.fileMeta}>💾 {(item.taille / 1024).toFixed(2)} Ko</ThemedText>
       </View>
     </View>
@@ -58,7 +59,7 @@ export default function HomeScreen() {
       ) : (
         <FlatList
           data={files}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={renderItem}
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
