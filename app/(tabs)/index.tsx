@@ -1,84 +1,55 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Alert, TouchableOpacity, Text, View } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { StyleSheet, FlatList, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { apiFetch } from '@/constants/api';
 
+type File = {
+  id: string;
+  user_id: string;
+  nom_original: string;
+  nom_serveur: string;
+  date_envoi: string;
+  extension: string;
+  taille: number;
+};
+
 export default function HomeScreen() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const router = useRouter();
-  const { authenticated } = useLocalSearchParams();
+  const [files, setFiles] = useState<File[]>([]);
 
   useEffect(() => {
-    if (authenticated === 'true') {
-      setIsAuthenticated(true);
-    } else {
-      const checkAuth = async () => {
-        try {
-          const response = await apiFetch('/auth/check');
-          if (response.ok) {
-            setIsAuthenticated(true);
-          } else {
-            setIsAuthenticated(false);
-          }
-        } catch {
-          setIsAuthenticated(false);
-        }
-      };
+    const fetchFiles = async () => {
+      try {
+        const data = await apiFetch('/fichiers');
+        setFiles(data);
+      } catch {
+        // Optionnel : gérer l'erreur d'affichage
+      }
+    };
+    fetchFiles();
+  }, []);
 
-      checkAuth();
-    }
-  }, [authenticated]); // Dépendance sur le paramètre `authenticated`
-
-  const handlePress = (path: string) => {
-    if (isAuthenticated) {
-      router.push(path);
-    } else {
-      Alert.alert('Accès refusé', 'Vous devez être connecté pour accéder à cette fonctionnalité.', [
-        { text: 'Se connecter', onPress: () => router.push('/auth/login') },
-        { text: 'Annuler', style: 'cancel' },
-      ]);
-    }
-  };
+  const renderItem = ({ item }: { item: File }) => (
+    <View style={styles.fileItem}>
+      <ThemedText type="defaultSemiBold">{item.nom_original}</ThemedText>
+      <ThemedText>Envoyé par l'utilisateur ID : {item.user_id}</ThemedText>
+      <ThemedText>Date d'envoi : {new Date(item.date_envoi).toLocaleDateString()}</ThemedText>
+      <ThemedText>Extension : {item.extension}</ThemedText>
+      <ThemedText>Taille : {(item.taille / 1024).toFixed(2)} Ko</ThemedText>
+    </View>
+  );
 
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title" style={styles.title}>
-        Bienvenue sur Share Mobile
+        Fichiers partagés
       </ThemedText>
-      <ThemedText style={styles.subtitle}>
-        {isAuthenticated
-          ? 'Partagez vos fichiers.'
-          : 'Connectez-vous ou inscrivez-vous pour accéder aux fonctionnalités.'}
-      </ThemedText>
-      <View style={styles.buttonContainer}>
-        {isAuthenticated ? (
-          <>
-            <TouchableOpacity
-              style={[styles.button, styles.primaryButton]}
-              onPress={() => handlePress('/files/share')}
-            >
-              <Text style={styles.buttonText}>Partager un fichier</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.secondaryButton]}
-              onPress={() => handlePress('/files/view')}
-            >
-              <Text style={styles.buttonText}>Voir les fichiers partagés</Text>
-            </TouchableOpacity>
-          </>
-        ) : (
-          <>
-            <TouchableOpacity style={[styles.button, styles.primaryButton]} onPress={() => router.push('/auth/login')}>
-              <Text style={styles.buttonText}>Se connecter</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, styles.secondaryButton]} onPress={() => router.push('/auth/register')}>
-              <Text style={styles.buttonText}>S'inscrire</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
+      <FlatList
+        data={files}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        contentContainerStyle={styles.list}
+      />
     </ThemedView>
   );
 }
@@ -98,37 +69,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#fff',
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#ccc',
-    marginBottom: 32,
-    textAlign: 'center',
-  },
-  buttonContainer: {
+  list: {
+    marginTop: 16,
     width: '100%',
-    alignItems: 'center',
   },
-  button: {
-    width: '80%',
-    paddingVertical: 14,
-    borderRadius: 25,
-    marginVertical: 10,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  primaryButton: {
-    backgroundColor: '#1E90FF',
-  },
-  secondaryButton: {
-    backgroundColor: '#32CD32',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+  fileItem: {
+    padding: 16,
+    marginBottom: 10,
+    borderRadius: 8,
+    backgroundColor: '#1E1E1E',
   },
 });
