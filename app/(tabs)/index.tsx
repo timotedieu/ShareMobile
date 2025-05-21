@@ -22,7 +22,27 @@ type User = {
 };
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-const SERVER_URL = 'http://192.168.1.100:8000';
+const SERVER_URL = 'http://192.168.1.100:8000'; // Remplace par ton IP locale
+
+function FileImage({ imageUrl }: { imageUrl: string }) {
+  const [imageError, setImageError] = useState(false);
+
+  if (imageError) {
+    return (
+      <View style={[styles.fileImage, styles.imageError]}>
+        <Text style={{ color: '#fff', textAlign: 'center', marginTop: 70 }}>Image non dispo</Text>
+      </View>
+    );
+  }
+  return (
+    <Image
+      source={{ uri: imageUrl }}
+      style={styles.fileImage}
+      resizeMode="cover"
+      onError={() => setImageError(true)}
+    />
+  );
+}
 
 export default function HomeScreen() {
   const [files, setFiles] = useState<File[]>([]);
@@ -65,23 +85,10 @@ export default function HomeScreen() {
     const imageUrl = isImage
       ? `${SERVER_URL}/uploads/${item.nomServeur}`
       : null;
-    const [imageError, setImageError] = useState(false);
 
     return (
       <View style={styles.fileItem}>
-        {isImage && !imageError && (
-          <Image
-            source={{ uri: imageUrl! }}
-            style={styles.fileImage}
-            resizeMode="cover"
-            onError={() => setImageError(true)}
-          />
-        )}
-        {isImage && imageError && (
-          <View style={[styles.fileImage, styles.imageError]}>
-            <Text style={{ color: '#fff', textAlign: 'center', marginTop: 70 }}>Image non dispo</Text>
-          </View>
-        )}
+        {isImage && imageUrl && <FileImage imageUrl={imageUrl} />}
         <ThemedText type="defaultSemiBold" style={styles.fileName}>{item.nomOriginal}</ThemedText>
         <View style={styles.fileMetaRow}>
           <ThemedText style={styles.fileMeta}>👤 {getUserDisplay(item.user)}</ThemedText>
