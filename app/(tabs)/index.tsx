@@ -4,6 +4,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { apiFetch } from '@/constants/api';
 import { useRouter } from 'expo-router';
+import * as Linking from 'expo-linking';
 
 type File = {
   id: number;
@@ -29,8 +30,20 @@ function FileImage({ imageUrl }: { imageUrl: string }) {
 
   return imageError ? (
     <View style={[styles.fileImage, styles.imageError]}>
-      <Text style={{ color: '#fff', textAlign: 'center', marginTop: 70 }}>Image non dispo</Text>
-      <Text style={{ color: '#fff', fontSize: 10, marginTop: 8 }}>{imageUrl}</Text>
+      <Text style={{ color: '#fff', textAlign: 'center', marginTop: 50 }}>Image non dispo</Text>
+      <Text style={{ color: '#fff', fontSize: 10, marginTop: 8, textAlign: 'center' }}>{imageUrl}</Text>
+      <TouchableOpacity
+        style={{
+          marginTop: 10,
+          backgroundColor: '#1E90FF',
+          borderRadius: 8,
+          paddingVertical: 6,
+          paddingHorizontal: 12,
+        }}
+        onPress={() => Linking.openURL(imageUrl)}
+      >
+        <Text style={{ color: '#fff', fontSize: 13 }}>Tester l'image</Text>
+      </TouchableOpacity>
     </View>
   ) : (
     <Image
@@ -38,7 +51,6 @@ function FileImage({ imageUrl }: { imageUrl: string }) {
       style={styles.fileImage}
       resizeMode="cover"
       onError={() => setImageError(true)}
-      // Pour debug, tu peux ajouter un onLoadEnd={() => console.log('Image loaded', imageUrl)}
     />
   );
 }

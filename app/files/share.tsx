@@ -7,14 +7,24 @@ import { ThemedView } from '@/components/ThemedView';
 import { Ionicons } from '@expo/vector-icons';
 
 const ALLOWED_EXTENSIONS = ['pdf', 'png', 'jpeg', 'jpg'];
-const MAX_SIZE = 200 * 1024; 
+const MAX_SIZE = 200 * 1024;
 
 export default function ShareFileScreen() {
   const [file, setFile] = useState<DocumentPicker.DocumentResult | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handlePickFile = async () => {
-    const result = await DocumentPicker.getDocumentAsync();
+    // Correction : DocumentPicker retourne un objet avec .type et .name/.size à la racine
+    const result = await DocumentPicker.getDocumentAsync({
+      type: [
+        'application/pdf',
+        'image/png',
+        'image/jpeg',
+        'image/jpg',
+      ],
+      copyToCacheDirectory: true,
+      multiple: false,
+    });
     if (result.type === 'success') {
       setFile(result);
     }
@@ -26,12 +36,14 @@ export default function ShareFileScreen() {
       return;
     }
 
+    // Correction : certains DocumentPicker ne donnent pas .size, il faut fallback à 0
     const ext = file.name.split('.').pop()?.toLowerCase() || '';
+    const size = file.size ?? 0;
     if (!ALLOWED_EXTENSIONS.includes(ext)) {
       Alert.alert('Erreur', 'Seuls les fichiers PDF, PNG, JPEG, JPG sont autorisés.');
       return;
     }
-    if ((file.size || 0) > MAX_SIZE) {
+    if (size > MAX_SIZE) {
       Alert.alert('Erreur', 'Le fichier ne doit pas dépasser 200 Ko.');
       return;
     }
@@ -39,17 +51,28 @@ export default function ShareFileScreen() {
     setLoading(true);
     try {
       const formData = new FormData();
+      // Ajout du fichier réel dans le formData
+      formData.append('file', {
+        uri: file.uri,
+        name: file.name,
+        type:
+          ext === 'pdf'
+            ? 'application/pdf'
+            : ext === 'png'
+            ? 'image/png'
+            : 'image/jpeg',
+      } as any);
       formData.append('nom_original', file.name);
       formData.append('nom_serveur', `server_${file.name}`);
       formData.append('date_envoi', new Date().toISOString());
       formData.append('extension', ext);
-      formData.append('taille', `${file.size || 0}`);
+      formData.append('taille', `${size}`);
 
       await apiFetch('/fichiers', {
         method: 'POST',
         body: formData,
         headers: {
-          'Content-Type': 'multipart/form-data',
+          // Ne pas forcer Content-Type ici, fetch le gère pour FormData
         },
       });
 
