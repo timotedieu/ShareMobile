@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, TextInput, Alert, TouchableOpacity, Text } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
@@ -11,24 +12,22 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/users/', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
+      const response = await fetch('http://127.0.0.1:8000/api/login_check', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ username: email, password }),
+});
 
       if (!response.ok) {
-        throw new Error('Erreur lors de la récupération des données');
-      }
-
-      const users = await response.json();
-      const user = users.find((u: any) => u.email === email && u.password === password);
-
-      if (user) {
-        Alert.alert('Succès', 'Connexion réussie');
-        router.push('/?authenticated=true');
-      } else {
         throw new Error('Email ou mot de passe incorrect');
       }
+
+      const data = await response.json();
+
+      await AsyncStorage.setItem('jwtToken', data.token);
+
+      Alert.alert('Succès', 'Connexion réussie');
+      router.push('/?authenticated=true');
     } catch (error: any) {
       Alert.alert('Erreur', error.message || 'Échec de la connexion');
     }
