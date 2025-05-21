@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, FlatList, View, Text, Platform } from 'react-native';
+import { StyleSheet, FlatList, View, Text, Platform, Image, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { apiFetch } from '@/constants/api';
+import { useRouter } from 'expo-router';
 
 type File = {
   id: number;
@@ -14,37 +15,77 @@ type File = {
   user?: string;
 };
 
+type User = {
+  id: number;
+  nom?: string;
+  prenom?: string;
+};
+
+const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
 export default function HomeScreen() {
   const [files, setFiles] = useState<File[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchFiles = async () => {
+    const fetchFilesAndUsers = async () => {
       try {
         setError(null);
-        const data = await apiFetch('/fichiers');
-        setFiles(data['hydra:member'] || []);
+        const [fileData, userData] = await Promise.all([
+          apiFetch('/fichiers'),
+          apiFetch('/users'),
+        ]);
+        setFiles(fileData['hydra:member'] || []);
+        setUsers(userData['hydra:member'] || []);
       } catch (e: any) {
         setFiles([]);
+        setUsers([]);
         setError(e?.message || 'Erreur inconnue');
       }
     };
-    fetchFiles();
+    fetchFilesAndUsers();
   }, []);
 
-  const renderItem = ({ item }: { item: File }) => (
-    <View style={styles.fileItem}>
-      <ThemedText type="defaultSemiBold" style={styles.fileName}>{item.nomOriginal}</ThemedText>
-      <View style={styles.fileMetaRow}>
-        <ThemedText style={styles.fileMeta}>👤 {item.user ? item.user.split('/').pop() : '-'}</ThemedText>
-        <ThemedText style={styles.fileMeta}>📅 {new Date(item.dateEnvoi).toLocaleDateString()}</ThemedText>
+  const getUserDisplay = (userApiUri?: string) => {
+    if (!userApiUri) return '-';
+    const id = parseInt(userApiUri.split('/').pop() || '', 10);
+    const user = users.find((u) => u.id === id);
+    if (user) {
+      const nomComplet = [user.prenom, user.nom].filter(Boolean).join(' ');
+      return `${nomComplet || 'Utilisateur'} (${user.id})`;
+    }
+    return `Utilisateur (${id})`;
+  };
+
+  const renderItem = ({ item }: { item: File }) => {
+    const isImage = IMAGE_EXTENSIONS.includes(item.extension?.toLowerCase());
+    const imageUrl = isImage
+      ? `http://127.0.0.1:8000/uploads/${item.nomServeur}`
+      : null;
+
+    return (
+      <View style={styles.fileItem}>
+        {isImage && (
+          <Image
+            source={{ uri: imageUrl! }}
+            style={styles.fileImage}
+            resizeMode="cover"
+          />
+        )}
+        <ThemedText type="defaultSemiBold" style={styles.fileName}>{item.nomOriginal}</ThemedText>
+        <View style={styles.fileMetaRow}>
+          <ThemedText style={styles.fileMeta}>👤 {getUserDisplay(item.user)}</ThemedText>
+          <ThemedText style={styles.fileMeta}>📅 {new Date(item.dateEnvoi).toLocaleDateString()}</ThemedText>
+        </View>
+        <View style={styles.fileMetaRow}>
+          <ThemedText style={styles.fileMeta}>📄 {item.extension?.toUpperCase()}</ThemedText>
+          <ThemedText style={styles.fileMeta}>💾 {(item.taille / 1024).toFixed(2)} Ko</ThemedText>
+        </View>
       </View>
-      <View style={styles.fileMetaRow}>
-        <ThemedText style={styles.fileMeta}>📄 {item.extension?.toUpperCase()}</ThemedText>
-        <ThemedText style={styles.fileMeta}>💾 {(item.taille / 1024).toFixed(2)} Ko</ThemedText>
-      </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <ThemedView style={styles.container}>
@@ -72,6 +113,14 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
         />
       )}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => router.push('/files/share')}
+        activeOpacity={0.85}
+      >
+        <Text style={styles.fabIcon}>＋</Text>
+        <Text style={styles.fabText}>Partager un fichier</Text>
+      </TouchableOpacity>
     </ThemedView>
   );
 }
@@ -114,6 +163,13 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 6,
   },
+  fileImage: {
+    width: '100%',
+    height: 180,
+    borderRadius: 12,
+    marginBottom: 10,
+    backgroundColor: '#222',
+  },
   fileName: {
     fontSize: 18,
     marginBottom: 8,
@@ -134,5 +190,34 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     opacity: 0.7,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 32,
+    right: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1E90FF',
+    paddingVertical: 14,
+    paddingHorizontal: 22,
+    borderRadius: 32,
+    shadowColor: '#1E90FF',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  fabIcon: {
+    color: '#fff',
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginRight: 8,
+    marginTop: -2,
+  },
+  fabText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
   },
 });
