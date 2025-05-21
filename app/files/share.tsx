@@ -10,11 +10,11 @@ const ALLOWED_EXTENSIONS = ['pdf', 'png', 'jpeg', 'jpg'];
 const MAX_SIZE = 200 * 1024;
 
 export default function ShareFileScreen() {
-  const [file, setFile] = useState<DocumentPicker.DocumentResult | null>(null);
+  const [file, setFile] = useState<any>(null);
+
   const [loading, setLoading] = useState(false);
 
   const handlePickFile = async () => {
-    // Correction : DocumentPicker retourne un objet avec .type et .name/.size à la racine
     const result = await DocumentPicker.getDocumentAsync({
       type: [
         'application/pdf',
@@ -26,17 +26,20 @@ export default function ShareFileScreen() {
       multiple: false,
     });
     if (result.type === 'success') {
-      setFile(result);
+      if ((result as any).assets && Array.isArray((result as any).assets) && (result as any).assets.length > 0) {
+        setFile((result as any).assets[0]);
+      } else {
+        setFile(result);
+      }
     }
   };
 
   const handleShareFile = async () => {
-    if (!file || file.type !== 'success') {
+    if (!file || !file.name || !file.uri) {
       Alert.alert('Erreur', 'Veuillez sélectionner un fichier.');
       return;
     }
 
-    // Correction : certains DocumentPicker ne donnent pas .size, il faut fallback à 0
     const ext = file.name.split('.').pop()?.toLowerCase() || '';
     const size = file.size ?? 0;
     if (!ALLOWED_EXTENSIONS.includes(ext)) {
@@ -51,7 +54,6 @@ export default function ShareFileScreen() {
     setLoading(true);
     try {
       const formData = new FormData();
-      // Ajout du fichier réel dans le formData
       formData.append('file', {
         uri: file.uri,
         name: file.name,
@@ -72,7 +74,6 @@ export default function ShareFileScreen() {
         method: 'POST',
         body: formData,
         headers: {
-          // Ne pas forcer Content-Type ici, fetch le gère pour FormData
         },
       });
 
@@ -101,7 +102,7 @@ export default function ShareFileScreen() {
       >
         <Ionicons name="cloud-upload-outline" size={28} color="#fff" style={{ marginRight: 10 }} />
         <Text style={styles.fileButtonText}>
-          {file ? `Fichier : ${file.name}` : 'Choisir un fichier'}
+          {file && file.name ? `Fichier : ${file.name}` : 'Choisir un fichier'}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
