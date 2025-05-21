@@ -6,13 +6,16 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Ionicons } from '@expo/vector-icons';
 
+const ALLOWED_EXTENSIONS = ['pdf', 'png', 'jpeg', 'jpg'];
+const MAX_SIZE = 200 * 1024; 
+
 export default function ShareFileScreen() {
   const [file, setFile] = useState<DocumentPicker.DocumentResult | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handlePickFile = async () => {
     const result = await DocumentPicker.getDocumentAsync();
-    if (result.assets && result.assets.length > 0) {
+    if (result.type === 'success') {
       setFile(result);
     }
   };
@@ -22,13 +25,24 @@ export default function ShareFileScreen() {
       Alert.alert('Erreur', 'Veuillez sélectionner un fichier.');
       return;
     }
+
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      Alert.alert('Erreur', 'Seuls les fichiers PDF, PNG, JPEG, JPG sont autorisés.');
+      return;
+    }
+    if ((file.size || 0) > MAX_SIZE) {
+      Alert.alert('Erreur', 'Le fichier ne doit pas dépasser 200 Ko.');
+      return;
+    }
+
     setLoading(true);
     try {
       const formData = new FormData();
       formData.append('nom_original', file.name);
       formData.append('nom_serveur', `server_${file.name}`);
       formData.append('date_envoi', new Date().toISOString());
-      formData.append('extension', file.name.split('.').pop() || '');
+      formData.append('extension', ext);
       formData.append('taille', `${file.size || 0}`);
 
       await apiFetch('/fichiers', {
@@ -55,7 +69,7 @@ export default function ShareFileScreen() {
         <Text style={{ color: '#32CD32' }}> un fichier</Text>
       </ThemedText>
       <ThemedText type="subtitle" style={styles.subtitle}>
-        Sélectionnez un fichier à envoyer sur ShareMobile
+        Sélectionnez un fichier PDF, PNG, JPEG ou JPG (max 200 Ko)
       </ThemedText>
       <TouchableOpacity
         style={styles.fileButton}

@@ -22,24 +22,23 @@ type User = {
 };
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-const SERVER_URL = 'http://192.168.1.100:8000'; // Remplace par ton IP locale
+const SERVER_URL = 'http://192.168.1.100:8000'; // Remplace par l'IP de ton PC
 
 function FileImage({ imageUrl }: { imageUrl: string }) {
   const [imageError, setImageError] = useState(false);
 
-  if (imageError) {
-    return (
-      <View style={[styles.fileImage, styles.imageError]}>
-        <Text style={{ color: '#fff', textAlign: 'center', marginTop: 70 }}>Image non dispo</Text>
-      </View>
-    );
-  }
-  return (
+  return imageError ? (
+    <View style={[styles.fileImage, styles.imageError]}>
+      <Text style={{ color: '#fff', textAlign: 'center', marginTop: 70 }}>Image non dispo</Text>
+      <Text style={{ color: '#fff', fontSize: 10, marginTop: 8 }}>{imageUrl}</Text>
+    </View>
+  ) : (
     <Image
       source={{ uri: imageUrl }}
       style={styles.fileImage}
       resizeMode="cover"
       onError={() => setImageError(true)}
+      // Pour debug, tu peux ajouter un onLoadEnd={() => console.log('Image loaded', imageUrl)}
     />
   );
 }
