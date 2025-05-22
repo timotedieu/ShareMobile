@@ -1,17 +1,16 @@
-import { useState } from 'react';
-import { StyleSheet, TouchableOpacity, Text, View, Alert, Platform } from 'react-native';
+import { useState } from 'react'; 
+import { StyleSheet, TouchableOpacity, Text, Alert, Platform } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
-import { apiFetch } from '@/constants/api';
+// import { apiFetch } from '@/constants/api'; // plus utilisé ici
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Ionicons } from '@expo/vector-icons';
 
 const ALLOWED_EXTENSIONS = ['pdf', 'png', 'jpeg', 'jpg'];
-const MAX_SIZE = 200 * 1024;
+const MAX_SIZE = 200 * 1024; // 200 Ko
 
 export default function ShareFileScreen() {
   const [file, setFile] = useState<any>(null);
-
   const [loading, setLoading] = useState(false);
 
   const handlePickFile = async () => {
@@ -25,9 +24,12 @@ export default function ShareFileScreen() {
       copyToCacheDirectory: true,
       multiple: false,
     });
-    if (result.type === 'success') {
-      if ((result as any).assets && Array.isArray((result as any).assets) && (result as any).assets.length > 0) {
-        setFile((result as any).assets[0]);
+
+    console.log('DocumentPicker result:', result);
+
+    if (result.canceled === false) {
+      if (result.assets && Array.isArray(result.assets) && result.assets.length > 0) {
+        setFile(result.assets[0]);
       } else {
         setFile(result);
       }
@@ -35,13 +37,14 @@ export default function ShareFileScreen() {
   };
 
   const handleShareFile = async () => {
-    if (!file || !file.name || !file.uri) {
+    if (!file || !file.name) {
       Alert.alert('Erreur', 'Veuillez sélectionner un fichier.');
       return;
     }
 
     const ext = file.name.split('.').pop()?.toLowerCase() || '';
     const size = file.size ?? 0;
+
     if (!ALLOWED_EXTENSIONS.includes(ext)) {
       Alert.alert('Erreur', 'Seuls les fichiers PDF, PNG, JPEG, JPG sont autorisés.');
       return;
@@ -53,34 +56,38 @@ export default function ShareFileScreen() {
 
     setLoading(true);
     try {
-      const formData = new FormData();
-      formData.append('file', {
-        uri: file.uri,
-        name: file.name,
-        type:
-          ext === 'pdf'
-            ? 'application/pdf'
-            : ext === 'png'
-            ? 'image/png'
-            : 'image/jpeg',
-      } as any);
-      formData.append('nom_original', file.name);
-      formData.append('nom_serveur', `server_${file.name}`);
-      formData.append('date_envoi', new Date().toISOString());
-      formData.append('extension', ext);
-      formData.append('taille', `${size}`);
+      const payload = {
+        user: '/api/users/1',  // relation attendue sous forme d'URI
+        nomOriginal: file.name,
+        nomServeur: `server_${file.name}`,
+        dateEnvoi: new Date().toISOString(),
+        extension: ext,
+        taille: size,
+      };
 
-      await apiFetch('/fichiers', {
+      console.log('Payload envoyé:', JSON.stringify(payload));
+
+      const response = await fetch('http://127.0.0.1:8000/api/fichiers', {
         method: 'POST',
-        body: formData,
         headers: {
+          'Content-Type': 'application/ld+json',
+          'Accept': 'application/ld+json',
         },
+        body: JSON.stringify(payload),
       });
 
-      Alert.alert('Succès', 'Fichier partagé avec succès.');
+      const data = await response.json();
+      console.log('Réponse serveur:', data);
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP ${response.status}`);
+      }
+
+      Alert.alert('Succès', 'Données partagées avec succès.');
       setFile(null);
     } catch (error) {
-      Alert.alert('Erreur', 'Échec du partage du fichier.');
+      Alert.alert('Erreur', 'Échec du partage des données.');
+      console.error(error);
     } finally {
       setLoading(false);
     }
